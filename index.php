@@ -9,6 +9,7 @@
   <body>
     <div class="row">
         <div class="col-md-6 mx-auto">
+          <h5 class="text-center">Data Inventaris Pribadi</h5>
             <div class="card">
                 <div class="card-header bg-info text-light">
                     Form Input Data Barang
@@ -32,7 +33,7 @@
                     <form action="Post">
                       <div class="mb-3">
                         <label class="form-label">Asal Barang</label>
-                        <select class="form-select">
+                        <select class="form-select" name="tasal">
                           <option selected>-Pilih-</option>
                           <option value="Pembelian">Pembelian</option>
                           <option value="Hibah">Hibah</option>
@@ -52,7 +53,7 @@
                       <div class="col">
                         <div class="mb-3">
                           <label class="form-label">Satuan</label>
-                            <select class="form-select">
+                            <select class="form-select" name="tsatuan">
                               <option selected>-Pilih-</option>
                               <option value="Unit">Unit</option>
                               <option value="Kotak">Kotak</option>
@@ -66,6 +67,11 @@
                           <label class="form-label">Tanggal diterima</label>
                           <input type="date" name="ttanggal_diterima" class="form-control">                        
                         </div>
+                      </div>
+                      <div class="text-center">
+                        <hr>
+                        <button class="btn btn-primary" name="bsimpan" type="submit">Simpan</button>
+                        <button class="btn btn-danger" name="breset" type="reset">Kosongkan</button>
                       </div>
                     </div>
                     <!-- End of Form -->
