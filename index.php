@@ -1,3 +1,16 @@
+<?php 
+  //Connect Database
+  $server = "localhost";
+  $user = "root";
+  $password = "";
+  $database = "dbcrudpractice";
+
+  //Create Connection
+  $koneksi = mysqli_connect($server, $user, $password, $database) or die(mysqli_error($koneksi));
+
+
+?>
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -42,6 +55,7 @@
                       </div>                   
                     </form>
 
+                    <!-- -->
                     <div class="row">
                       <div class="col">
                         <div class="mb-3">
@@ -49,7 +63,6 @@
                           <input type="number" name="tjumlah" class="form-control" placeholder="Jumlah Barang">                        
                         </div>
                       </div>
-
                       <div class="col">
                         <div class="mb-3">
                           <label class="form-label">Satuan</label>
@@ -61,6 +74,7 @@
                             </select>     
                         </div>                   
                       </div>
+                      <!-- -->
 
                       <div class="col">
                         <div class="mb-3">
@@ -81,12 +95,47 @@
                 </div>
             </div>
         </div>
+
         <div class="card mt-3">
           <div class="card-header bg-info text-light">
             Data Barang
           </div>
           <div class="card-body">
-                    
+            <div class="col-md-6 mx-auto">
+              <form method="POST">
+                <div class="input-group mb-3">
+                  <input type="text" name="tcari" class="form-control" placeholder="Masukkan kata kunci">
+                  <button class="btn btn-primary" type="submit" name="bcari">Cari</button>
+                  <button class="btn btn-danger" type="submit" name="breset">Reset</button>
+                </div>
+              </form>
+            </div>
+
+            <table class="table table-striped table-hover table-bordered">
+              <tr> <!-- Header Table -->
+                <th>No.</th>
+                <th>Kode Barang</th>
+                <th>Nama Barang</th>
+                <th>Asal Barang</th>
+                <th>Jumlah</th>
+                <th>Tanggal diterima</th>
+                <th>Aksi</th>
+              </tr>
+
+              <tr> <!-- Isi Table -->
+                <td>1</td>
+                <td>INV-2022-001</td>
+                <td>Printer Epson</td>
+                <td>Pembelian</td>
+                <td>1</td>
+                <td>2023-06-13</td>
+                <td>
+                  <a href="#" class="btn btn-warning">Edit</a>
+                  <a href="#" class="btn btn-danger">Hapus</a>
+                </td>
+
+              </tr>
+            </table>
           </div>
           <div class="card-footer bg-info">
 
