@@ -8,36 +8,85 @@ $database = "dbcrudpractice";
 //Create Connection
 $koneksi = mysqli_connect($server, $user, $password, $database) or die(mysqli_error($koneksi));
 
+//
+$q = mysqli_query($koneksi, "SELECT kode FROM tbarang order by kode desc limit 1");
+$dataX = mysqli_fetch_array($q);
+if($dataX){
+  $no_terakhir = substr($dataX['kode'], -3);
+  $no = $no_terakhir + 1;
+
+  if($no > 0 and $no < 10){
+    $kode = "00".$no;
+  }else if($no > 10 and $no < 100){
+    $kode = "0".$no;
+  }else if($no > 100){
+    $kode = $no;
+  }
+}else{
+  $kode = "001";
+}
+
+$tahun = date('Y');
+$vkode = "INV-" . $tahun . '-' .$kode;
+
 //Insert data into Database
 //If button clicked
 if (isset($_POST['bsimpan'])) {
-  //New data will be saved
-  $simpan = mysqli_query($koneksi, "INSERT INTO tbarang (kode, nama, asal, jumlah, satuan, tanggal_diterima)
-                                      VALUE ( '$_POST[tkode]', 
-                                              '$_POST[tnama]',
-                                              '$_POST[tasal]',
-                                              '$_POST[tjumlah]',
-                                              '$_POST[tsatuan]',
-                                              '$_POST[ttanggal_diterima]' )
-                          ");
+  //if the data gonna be edited or saved as a new one
+  if(isset($_GET['hal']) == "edit"){
+    //Edit data
+    $edit = mysqli_query($koneksi, 
+    "UPDATE tbarang SET
+            nama = '$_POST[tnama]',
+            asal = '$_POST[tasal]',
+            jumlah = '$_POST[tjumlah]',
+            satuan = '$_POST[tsatuan]',
+            tanggal_diterima = '$_POST[ttanggal_diterima]'
+            WHERE id_barang = '$_GET[id]'
+    ");
+  //If edit success
+    if ($edit) {
+      echo "<script>
+                alert('Edit data Success!');
+                document.location='index.php';
+              </script>";
+    } else {
+      echo
+      "<script>
+              alert('Edit data Failed!');
+              document.location='index.php';
+          </script>";
+    }
+  }else{
+    //Save a new data
+    $simpan = mysqli_query($koneksi, 
+    "INSERT INTO tbarang (kode, nama, asal, jumlah, satuan, tanggal_diterima)
+     VALUE ( '$_POST[tkode]', 
+             '$_POST[tnama]',
+             '$_POST[tasal]',
+             '$_POST[tjumlah]',
+             '$_POST[tsatuan]',
+             '$_POST[ttanggal_diterima]' )
+    ");
 
   //If submit success
-  if ($simpan) {
-    echo "<script>
-              alert('Submit data Success!');
+    if ($simpan) {
+      echo "<script>
+                alert('Submit data Success!');
+                document.location='index.php';
+              </script>";
+    } else {
+      echo
+      "<script>
+              alert('Submit data Failed!');
               document.location='index.php';
-            </script>";
-  } else {
-    echo
-    "<script>
-            alert('Submit data Failed!');
-            document.location='index.php';
-        </script>";
+          </script>";
+    }
   }
 }
 
 //Declaration variabel to contain data wanted to edit
-$vkode = "";
+//$vkode = "";
 $vnama = "";
 $vasal = "";
 $vjumlah = "";
@@ -59,6 +108,23 @@ if (isset($_GET['hal'])) {
       $vjumlah = $data['jumlah'];
       $vsatuan = $data['satuan'];
       $vtanggal_diterima = $data['tanggal_diterima'];
+    }
+    //Remove data
+  }else if ($_GET['hal'] == "hapus"){
+    $hapus = mysqli_query($koneksi, "DELETE FROM tbarang WHERE id_barang = '$_GET[id]'");
+
+    //If hapus success
+    if ($hapus) {
+      echo "<script>
+                alert('Delete data Success!');
+                document.location='index.php';
+              </script>";
+    } else {
+      echo
+      "<script>
+              alert('Delete data Failed!');
+              document.location='index.php';
+          </script>";
     }
   }
 }
@@ -154,9 +220,8 @@ if (isset($_GET['hal'])) {
         <div class="col-md-6 mx-auto">
           <form method="POST">
             <div class="input-group mb-3">
-              <input type="text" name="tcari" class="form-control" placeholder="Masukkan kata kunci">
+              <input type="text" name="tcari" value="<?= @$_POST['tcari'] ?>" class="form-control" placeholder="Masukkan kata kunci">
               <button class="btn btn-primary" name="bcari" type="submit">Cari</button>
-              <button class="btn btn-danger" name="breset" type="reset">Reset</button>
             </div>
           </form>
         </div>
@@ -176,7 +241,18 @@ if (isset($_GET['hal'])) {
           <?php
           //Display Data
           $increment = 1;
-          $tampil = mysqli_query($koneksi, "SELECT * FROM tbarang order by id_barang asc");
+
+          //Data Searching
+          //If search is clicked
+          if(isset($_POST['bcari'])){
+            //show searched data
+            $keyword = $_POST['tcari'];
+            $query = "SELECT * FROM tbarang WHERE kode like '%$keyword%' or nama like '%$keyword%' order by id_barang asc";
+          }else{
+            $query = "SELECT * FROM tbarang order by id_barang asc";
+          }
+
+          $tampil = mysqli_query($koneksi, $query);
           while ($data = mysqli_fetch_array($tampil)) :
           ?>
 
@@ -190,13 +266,14 @@ if (isset($_GET['hal'])) {
               <td>
                 <a href="index.php?hal=edit&id=<?= $data['id_barang'] ?>" class="btn btn-warning">Edit</a>
 
-                <a href="index.php?hal=hapus&id=<?= $data['id_barang'] ?>" class="btn btn-danger">Hapus</a>
+                <a href="index.php?hal=hapus&id=<?= $data['id_barang'] ?>" class="btn btn-danger"
+                onclick="return confirm('Are you sure want to delete this data?')" >Hapus</a>
               </td>
             </tr>
 
           <?php endwhile; ?>
 
-        </table>
+        </table> 
       </div>
       <div class="card-footer bg-info">
 
