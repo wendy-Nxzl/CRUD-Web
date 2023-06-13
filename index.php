@@ -8,7 +8,32 @@
   //Create Connection
   $koneksi = mysqli_connect($server, $user, $password, $database) or die(mysqli_error($koneksi));
 
+  //If button clicked
+  if(isset($_POST['bsimpan'])){
+    //New data will be saved
+    $simpan = mysqli_query($koneksi, "INSERT INTO tbarang (kode, nama, asal, jumlah, satuan, tanggal_diterima)
+                                      VALUE ( '$_POST[tkode]', 
+                                              '$_POST[tnama]',
+                                              '$_POST[tasal]',
+                                              '$_POST[tjumlah]',
+                                              '$_POST[tsatuan]',
+                                              '$_POST[ttanggal_diterima]' )
+                          ");
 
+    //If submit success
+    if ($simpan) {
+      echo "<script>
+              alert('Submit data Success!');
+              document.location='index.php';
+            </script>";
+    } else {
+      echo 
+        "<script>
+            alert('Submit data Failed!');
+            document.location='index.php';
+        </script>";
+    }
+  }
 ?>
 
 <!doctype html>
@@ -122,19 +147,29 @@
                 <th>Aksi</th>
               </tr>
 
-              <tr> <!-- Isi Table -->
-                <td>1</td>
-                <td>INV-2022-001</td>
-                <td>Printer Epson</td>
-                <td>Pembelian</td>
-                <td>1</td>
-                <td>2023-06-13</td>
+              <!-- Looping Data from Database -->
+              <?php 
+                //Display Data
+                $increment = 1;
+                $tampil = mysqli_query($koneksi, "SELECT * FROM tbarang order by id_barang asc");
+                while($data = mysqli_fetch_array($tampil)) :
+              ?>
+
+              <tr> <!-- Table Content -->
+                <td><?= $increment++ ?></td>
+                <td><?= $data['kode'] ?></td>
+                <td><?= $data['nama'] ?></td>
+                <td><?= $data['asal'] ?></td>
+                <td><?= $data['jumlah']?> <?= $data['satuan']?></td>
+                <td><?= $data['tanggal_diterima']?></td>
                 <td>
                   <a href="#" class="btn btn-warning">Edit</a>
                   <a href="#" class="btn btn-danger">Hapus</a>
-                </td>
-
+                </td>                
               </tr>
+
+              <?php endwhile; ?>
+
             </table>
           </div>
           <div class="card-footer bg-info">
